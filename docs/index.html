@@ -12,6 +12,7 @@
     <!-- 使用CDN加速的jQuery -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     
+    <!-- 内联关键CSS -->
     <style>
         /* 添加加载状态样式 */
         .loading {
@@ -41,6 +42,7 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* 你原有的样式保持不变 */
         body {
             background: linear-gradient(135deg, #ff7e5f, #feb47b);
             color: white;
@@ -188,6 +190,10 @@
             margin-top: 20px;
         }
     </style>
+
+    <!-- 异步加载非关键CSS -->
+    <link rel="preload" href="css/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="css/style.css"></noscript>
 </head>
 <body>
     <!-- 添加加载状态提示 -->
@@ -213,13 +219,13 @@
     </div>
 
     <script>
-        // 添加错误处理函数
+        // 错误处理函数
         function handleError(error) {
             console.error('发生错误:', error);
             alert('抱歉，加载出现问题，请刷新页面重试');
         }
 
-        // 添加资源加载处理
+        // 资源加载处理
         window.addEventListener('load', function() {
             document.getElementById('loading').style.display = 'none';
         });
@@ -228,42 +234,49 @@
             handleError(e.error);
         });
 
-        // 优化原有的事件处理器
-        document.getElementById('sadBtn').addEventListener('click', function() {
-            try {
-                const originalMessage = document.getElementById('originalMessage');
-                const newMessage = document.getElementById('newMessage');
-                const image1 = document.getElementById('image1');
-                const image2 = document.getElementById('image2');
-                
-                originalMessage.classList.add('hide');
-                image2.style.display = 'none';
-                
-                setTimeout(() => {
-                    originalMessage.style.display = 'none';
-                    newMessage.style.display = 'block';
-                    image1.style.display = 'block';
+        // 优化的事件处理
+        try {
+            document.getElementById('sadBtn').addEventListener('click', function() {
+                try {
+                    const originalMessage = document.getElementById('originalMessage');
+                    const newMessage = document.getElementById('newMessage');
+                    const image1 = document.getElementById('image1');
+                    const image2 = document.getElementById('image2');
                     
-                    requestAnimationFrame(() => {
-                        newMessage.classList.add('show');
-                    });
+                    originalMessage.classList.add('hide');
+                    image2.style.display = 'none';
                     
-                    newMessage.style.animation = 'sparkle 2s infinite';
-                }, 500);
+                    setTimeout(() => {
+                        originalMessage.style.display = 'none';
+                        newMessage.style.display = 'block';
+                        image1.style.display = 'block';
+                        
+                        requestAnimationFrame(() => {
+                            newMessage.classList.add('show');
+                        });
+                        
+                        newMessage.style.animation = 'sparkle 2s infinite';
+                    }, 500);
 
-                this.style.display = 'none';
-            } catch (error) {
-                handleError(error);
-            }
-        });
+                    this.style.display = 'none';
+                } catch (error) {
+                    handleError(error);
+                }
+            });
 
-        document.getElementById('happyBtn').addEventListener('click', function() {
-            try {
-                window.location.href = 'sr.html';
-            } catch (error) {
-                handleError(error);
-            }
-        });
+            document.getElementById('happyBtn').addEventListener('click', function() {
+                try {
+                    window.location.href = 'sr.html';
+                } catch (error) {
+                    handleError(error);
+                }
+            });
+        } catch (error) {
+            handleError(error);
+        }
     </script>
+
+    <!-- 异步加载非关键脚本 -->
+    <script src="js/index.js" async defer></script>
 </body>
 </html>
