@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生日快乐</title>
+    
+    <!-- 预加载关键资源 -->
+    <link rel="preload" href="images/1.gif" as="image">
+    <link rel="preload" href="images/2.jpg" as="image">
+    
+    <!-- 使用CDN加速的jQuery -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    
+    <style>
+        /* 添加加载状态样式 */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #ff7e5f;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        body {
+            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+            color: white;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            padding: 40px 60px;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            background-color: rgba(255, 255, 255, 0.1);
+            min-width: 500px;
+            min-height: 400px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 30px;
+        }
+
+        #newMessage {
+            display: none;
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.8s ease;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: absolute;
+            width: 100%;
+            left: 0;
+            top: 40px;
+        }
+
+        #newMessage.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        #originalMessage {
+            transition: all 0.5s ease;
+            margin-bottom: 20px;
+        }
+
+        #originalMessage.hide {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            position: absolute;
+            bottom: 40px;
+            width: 100%;
+            left: 0;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            min-width: 140px;
+        }
+
+        #happyBtn {
+            background: linear-gradient(45deg, #ffc5a1, #ffc5a1);
+        }
+
+        #sadBtn {
+            background: linear-gradient(45deg, #ffc5a1, #ffc5a1);
+        }
+
+        button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                120deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            transition: all 0.5s;
+        }
+
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        button:hover:before {
+            left: 100%;
+        }
+
+        button:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes sparkle {
+            0% { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); }
+            50% { text-shadow: 2px 2px 8px rgba(255, 255, 255, 0.5); }
+            100% { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); }
+        }
+
+        .image-container {
+            margin: 20px 0;
+            max-width: 300px;
+            margin: 20px auto;
+        }
+
+        .image-container img {
+            width: 300px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #image1 {
+            display: none;
+            margin-top: 100px;
+        }
+
+        #image2 {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 添加加载状态提示 -->
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div class="container">
+        <h1 id="originalMessage">生日快乐，你快乐吗？</h1>
+        <div class="image-container" id="image2">
+            <img src="images/2.jpg" alt="图片2">
+        </div>
+        
+        <h1 id="newMessage">你的不快乐都消失了哈哈哈！！！</h1>
+        <div class="image-container" id="image1">
+            <img src="images/1.gif" alt="图片1">
+        </div>
+        
+        <div class="btn-container">
+            <button id="happyBtn">快乐</button>
+            <button id="sadBtn">不快乐</button>
+        </div>
+    </div>
+
+    <script>
+        // 添加错误处理函数
+        function handleError(error) {
+            console.error('发生错误:', error);
+            alert('抱歉，加载出现问题，请刷新页面重试');
+        }
+
+        // 添加资源加载处理
+        window.addEventListener('load', function() {
+            document.getElementById('loading').style.display = 'none';
+        });
+
+        window.addEventListener('error', function(e) {
+            handleError(e.error);
+        });
+
+        // 优化原有的事件处理器
+        document.getElementById('sadBtn').addEventListener('click', function() {
+            try {
+                const originalMessage = document.getElementById('originalMessage');
+                const newMessage = document.getElementById('newMessage');
+                const image1 = document.getElementById('image1');
+                const image2 = document.getElementById('image2');
+                
+                originalMessage.classList.add('hide');
+                image2.style.display = 'none';
+                
+                setTimeout(() => {
+                    originalMessage.style.display = 'none';
+                    newMessage.style.display = 'block';
+                    image1.style.display = 'block';
+                    
+                    requestAnimationFrame(() => {
+                        newMessage.classList.add('show');
+                    });
+                    
+                    newMessage.style.animation = 'sparkle 2s infinite';
+                }, 500);
+
+                this.style.display = 'none';
+            } catch (error) {
+                handleError(error);
+            }
+        });
+
+        document.getElementById('happyBtn').addEventListener('click', function() {
+            try {
+                window.location.href = 'index.html';
+            } catch (error) {
+                handleError(error);
+            }
+        });
+    </script>
+</body>
+</html>
